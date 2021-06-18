@@ -1,0 +1,28 @@
+#%RAML 1.0
+title: welcomeToMule
+/messenger:
+  post:
+    description: take customer name
+    queryParameters:
+      name:
+        type: string
+        description: the name of the customer
+        required: true
+        example: Hermela
+    body:
+      application/json:
+        example:
+          {
+            "name": "Hermela"
+          }
+    responses:
+      201:
+        body:
+          application/json:
+            example:
+              {
+                "Message": "Hello Hermela welcome to mulesoft today is June, 17, 2021"
+              }
+        
+      
+          
