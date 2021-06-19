@@ -9,12 +9,6 @@ title: welcomeToMule
         description: the name of the customer
         required: true
         example: Hermela
-    body:
-      application/json:
-        example:
-          {
-            "name": "Hermela"
-          }
     responses:
       201:
         body:
