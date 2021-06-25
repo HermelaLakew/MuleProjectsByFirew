@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="58a00437-178b-4fd3-9678-8cc9e483b572" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="CountingFlow" doc:id="7333513d-fe57-4ff7-b432-f9ea6b71025d" >
+		<http:listener doc:name="Qn1 /count" doc:id="18706613-b55f-4481-a03a-4c6b721fbc10" config-ref="HTTP_Listener_config" path="/count"/>
+		<flow-ref doc:name="Call QueryParams" doc:id="3b628fe4-c169-4aac-897c-75a3184085dc" name="QueryParamFlow"/>
+		<ee:transform doc:name="Transform Message" doc:id="5c1b1bba-ed8e-457e-bdcf-3cc210bade3c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+
+---
+sizeOf(payload)]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<sub-flow name="QueryParamFlow" doc:id="1f8d0988-16b2-4798-9df5-00d22f7df464" >
+		<set-payload value="#[attributes.queryParams.fname as String  ++ attributes.queryParams.lname]" doc:name="Set Payload" doc:id="9811daee-4c3e-482e-9799-ca2cf78b525e" />
+	</sub-flow>
+	<flow name="SquareAndCubeFlow" doc:id="29505829-3c9a-494f-b061-ce3dd3c813a8" >
+		<http:listener doc:name="Qn2 /calculate" doc:id="a9e6229a-0be5-4c12-a507-81ecea1d2ebf" config-ref="HTTP_Listener_config" path="/calculate"/>
+		<ee:transform doc:name="Transform Message" doc:id="823b165f-0a99-4a6a-b821-afab8232fb02" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var num = payload 
+
+---
+
+{
+	a: "The Square of " ++ num ++ " is " ++ num * num ++ ".",
+	b: "The Cube of " ++ num ++ " is " ++ num * num * num ++ "."
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="FormatChangeFlow" doc:id="65ae891f-a1d3-4002-bb5b-e0d0533347ba" >
+		<http:listener doc:name="Qn3 /change" doc:id="48c4159d-f589-48a6-93b6-42d7f54cd84e" config-ref="HTTP_Listener_config" path="/change"/>
+		<ee:transform doc:name="Transform Message" doc:id="476d7078-1862-4dff-81e7-6564b0a00967" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var date= now()
+---
+date as String {format: "yyyy-mm-dd"}
+
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
